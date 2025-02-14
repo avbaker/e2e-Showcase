@@ -1,0 +1,104 @@
+'snake for programming club 14/03/12
+'by Alex Baker
+'Abingdon Preparatory School
+
+GraphicsWindow.Title = "Snake by Alex Baker"
+initialspeed = 400
+score = 0
+cellwidth = 20
+cellheight = 20
+gridwidth = 20  'how many cells on the x grid
+gridheight = 20 'how many cells on the y grid
+
+snakelength = 1 'initial length of the snake
+
+
+body[1][1] = math.Round(gridwidth/2)  'head x location
+body[1][2] = math.Round(gridheight/2) 'head y location
+
+fruitx = 10 'initial fruit location
+fruity = 2
+
+speed = initialspeed
+GraphicsWindow.DrawBoundText(30,30,500,"WELCOME TO SNAKE. USE THE UP DOWN LEFT AND RIGHT ARROWS TO MOVE AND TRY TO COLLECT AS MANY GREEN BLOBS AS YOU CAN!")
+Program.Delay(10000)
+mainloop:
+
+  update()
+  drawgrid()
+
+  score = score + (initialspeed-speed)/10
+  Program.Delay(speed)
+
+Goto mainloop
+
+
+Sub update
+  'update locations for the body
+  For i = 1 To snakelength 'stores last locations
+    lastbody[i][1] = body[i][1]
+    lastbody[i][2] = body[i][2]
+    EndFor
+
+  For i = 1 To snakelength 'moves the body forward by 1
+    body[i+1][1] = lastbody[i][1]
+    body[i+1][2] = lastbody[i][2]
+  EndFor
+
+  'update location of head
+  If GraphicsWindow.LastKey = "Up" Then
+    body[1][2] = body[1][2] - 1
+  ElseIf GraphicsWindow.LastKey = "Down" then
+    body[1][2] = body[1][2] +1
+  Elseif GraphicsWindow.LastKey = "Left" then
+    body[1][1] = body[1][1] - 1
+  elseif GraphicsWindow.LastKey = "Right" then
+    body[1][1] = body[1][1] + 1
+  EndIf
+
+  'detect eating
+  If body[1][1] = fruitx And body[1][2] = fruity Then
+    fruitx = Math.GetRandomNumber(gridwidth)
+    fruity = Math.GetRandomNumber(gridheight)
+    snakelength = snakelength+1
+    speed = speed - 10
+    score = score + 10
+  EndIf
+
+  'detect game over
+
+  'detect collision with self
+  For i = 2 To snakelength
+    If (body[1][1] = body[i][1]) And (body[1][2] = body[i][2]) Then
+      GraphicsWindow.ShowMessage("Game over! Score: " + score, "GAME OVER")
+      Program.End()
+    EndIf
+  EndFor
+
+  'detect collision with side
+  If (body[1][1] < 0 Or body[1][1] > gridwidth Or body[1][2] < 0 Or body[1][2] > gridheight) Then
+        GraphicsWindow.ShowMessage("Game over! Score: " + score, "GAME OVER")
+        Program.End()
+        EndIf
+EndSub
+
+
+Sub drawgrid
+  GraphicsWindow.Clear() 'clears the last stuff
+
+  GraphicsWindow.DrawText(0,(gridheight+1)*cellheight,score)
+
+  'draw the border
+  GraphicsWindow.PenColor = "black"
+  GraphicsWindow.DrawRectangle(0,0,(gridwidth+1)*cellwidth,(gridheight+1)*cellheight)
+
+  GraphicsWindow.BrushColor = "red" 'colour of the snake
+  For i = 1 To snakelength 'draw each piece of the snake
+      GraphicsWindow.FillEllipse(cellwidth * body[i][1], cellheight * body[i][2], cellwidth, cellheight)
+    EndFor
+
+    'draw the fruit
+    GraphicsWindow.BrushColor = "green"
+    GraphicsWindow.FillEllipse(cellwidth * fruitx, cellheight * fruity, cellwidth, cellheight)
+
+  EndSub

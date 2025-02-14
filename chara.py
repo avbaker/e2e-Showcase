@@ -1,3 +1,4 @@
+#sipport file for character_showdown.py
 import random
 class character:
     def __init__(self, name, st, tou, luc, dex):
@@ -17,7 +18,7 @@ class character:
     def attack(self, opponent):
 
         attribute = random.randint(0,0) #0 = strength, 1 = toughness, 2= dexterity
-        if attribute == 0:
+        if attribute == 0: #only strength has been implemented. TODO: implement toughness and dexterity
             #strength
             if self.strength+(1*self.luck) > opponent.strength+(1*opponent.luck):
                 print( f"{self.get_name()} wins in a battle of strength!")
